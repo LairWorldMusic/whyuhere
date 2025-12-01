@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WHYUHERE // プロファイル</title>
+    
+    <!-- Подключаем Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Подключаем шрифт Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <!-- Шрифт для иероглифов (Noto Sans JP) для красивого отображения -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Иконки Lucide (Исправленная ссылка) -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #080808;
+            --card-bg: #0f0f0f;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --border-color: #222;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Тонкие настройки типографики */
+        h1, h2, h3 {
+            letter-spacing: -0.03em;
+        }
+        
+        /* Класс для японского текста (чуть тоньше и элегантнее) */
+        .jp-text {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+
+        /* Стилизация скроллбара */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        /* Эффект при наведении на карточку */
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 20;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card:hover {
+            border-color: #fff; /* Белая обводка при наведении для контраста */
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05); /* Легкое свечение */
+        }
+        
+        /* Декоративные уголки для карточек (Anime HUD style) */
+        .info-card::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 10px;
+            height: 10px;
+            border-bottom: 2px solid transparent;
+            border-right: 2px solid transparent;
+            transition: 0.3s;
+        }
+        .info-card:hover::after {
+            border-color: #fff;
+        }
+
+        /* Аниме-стиль изображения */
+        .manga-filter {
+            filter: grayscale(100%) contrast(1.1) brightness(0.9);
+            mix-blend-mode: normal;
+        }
+
+        /* Линия-разделитель */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #333, transparent);
+            margin: 2rem 0;
+        }
+        
+        /* Анимация появления контента */
+        .fade-in {
+            animation: fadeIn 1s ease-out forwards;
+            animation-play-state: paused;
+            opacity: 0;
+            transform: translateY(20px);
+            position: relative;
+            z-index: 20;
+        }
+
+        .fade-in.animate {
+            animation-play-state: running;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+
+        /* Scroll reveal */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Стили для Персонажей по бокам --- */
+        .side-character {
+            position: fixed;
+            bottom: 0;
+            z-index: 0; /* На заднем плане */
+            pointer-events: none;
+            opacity: 0; /* Скрыты по умолчанию */
+            transition: opacity 2s ease;
+            filter: grayscale(100%) contrast(1.1) brightness(0.8);
+            /* Маска, чтобы они плавно исчезали сверху */
+            mask-image: linear-gradient(to bottom, transparent 0%, black 20%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%);
+        }
+
+        /* Показываем только на очень широких экранах (2xl = 1536px+) */
+        @media (min-width: 1536px) {
+            .side-character.show {
+                opacity: 0.25; /* Прозрачность, чтобы не отвлекать */
+            }
+        }
+
+        .side-character img {
+            height: 85vh; /* Высота персонажа */
+            width: auto;
+            object-fit: contain;
+        }
+
+        .char-left {
+            left: -50px;
+            transform: scaleX(-1); /* Отразить зеркально, чтобы смотрел в центр */
+        }
+
+        .char-right {
+            right: -50px;
+        }
+
+        .float-text {
+            animation: floatText 4s ease-in-out infinite;
+        }
+
+        @keyframes floatText {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+
+        /* Частицы на фоне */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        #particles-canvas.show {
+            opacity: 1;
+        }
+
+
+
+        /* Улучшенные карточки */
+        .info-card {
+            background: linear-gradient(145deg, var(--card-bg) 0%, #0a0a0a 100%);
+        }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Параллакс элементы */
+        .parallax {
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Аватар улучшенный hover */
+        .avatar-glow {
+            position: relative;
+        }
+
+        .avatar-glow::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #333, #555, #333);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .avatar-glow:hover::before {
+            opacity: 1;
+        }
+
+        /* Плавный zoom на картинке */
+        .smooth-zoom {
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .smooth-zoom:hover {
+            transform: scale(1.03);
+        }
+
+        /* Статы анимация */
+        .stat-box {
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            background: rgba(255,255,255,0.03);
+            transform: translateY(-2px);
+        }
+
+        /* Прелоадер */
+        #preloader {
+            transition: opacity 1.5s ease, visibility 1.5s ease;
+        }
+
+        #preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .preloader-logo {
+            animation: preloaderFade 2s ease-in-out forwards;
+        }
+
+        @keyframes preloaderFade {
+            0% { opacity: 0; transform: scale(0.9); }
+            30% { opacity: 1; transform: scale(1); }
+            70% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.05); }
+        }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center px-6 md:px-12 relative">
+
+    <!-- Прелоадер -->
+    <div id="preloader" class="fixed inset-0 z-[9999] bg-[#080808] flex items-center justify-center">
+        <img src="assets/logo.png" alt="Logo" class="w-48 h-48 object-contain preloader-logo">
+    </div>
+
+    <!-- Частицы -->
+    <canvas id="particles-canvas"></canvas>
+    
+
+
+    <!-- Персонаж СЛЕВА (Techwear aesthetic) -->
+    <div class="side-character char-left">
+        <img src="https://i.pinimg.com/1200x/66/d6/d3/66d6d3c605c132e9c33b87c33ed7c53b.jpg" alt="Left Character">
+    </div>
+
+    <!-- Персонаж СПРАВА (Techwear aesthetic) -->
+    <div class="side-character char-right">
+        <img src="https://i.pinimg.com/1200x/17/4d/aa/174daa592b5495d3e3cb34f5281ef95b.jpg" alt="Right Character">
+    </div>
+
+    <!-- Основной контейнер -->
+    <main class="w-full max-w-7xl relative z-10">
+
+        <!-- HERO SECTION - Full Screen -->
+        <section class="h-screen flex flex-col justify-center relative float-text">
+            <!-- HEADER -->
+            <header class="flex flex-col md:flex-row items-center md:items-end justify-between mb-12 fade-in">
+                <div class="flex flex-col md:flex-row items-center md:items-end gap-8 w-full md:w-auto">
+                    
+                    <!-- АВАТАРКА -->
+                    <div class="relative group shrink-0 avatar-glow">
+                        <div class="absolute -inset-0.5 bg-white/20 rounded-full blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                        <img src="https://i.pinimg.com/736x/f6/ae/90/f6ae90659f6eea25511c49ad4167ae5e.jpg" 
+                             alt="Lost Avatar" 
+                             class="relative w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-[#080808] manga-filter bg-neutral-900 transition-all duration-300 group-hover:border-neutral-700">
+                    </div>
+
+                    <div class="text-center md:text-left">
+                        <h1 class="text-5xl md:text-8xl font-black text-white leading-none tracking-tighter mb-2 flex flex-col md:block">
+                            WHYUHERE
+                            <span class="text-xl md:text-2xl text-neutral-600 font-normal align-top ml-0 md:ml-4 jp-text">ホワイユーヒア</span>
+                        </h1>
+                        <div class="flex items-center justify-center md:justify-start gap-4 text-base text-neutral-500 font-medium uppercase tracking-wide font-mono">
+                            <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></span>
+                            <span>Online <span class="text-neutral-700 mx-1">//</span> <span class="jp-text text-neutral-600">オンライン</span></span>
+                            <span class="text-neutral-700">|</span>
+                            <span>Player <span class="text-neutral-700 mx-1">//</span> <span class="jp-text text-neutral-600">プレイヤー</span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 md:mt-0 text-center md:text-right hidden md:block">
+                    <p class="text-xs text-neutral-500 uppercase tracking-widest font-bold mb-1">Since 2025 <span class="jp-text ml-1 opacity-50">設立</span></p>
+                    <p class="text-xs text-neutral-500 uppercase tracking-widest font-bold">Region: Russia<span class="jp-text ml-1 opacity-50">地域</span></p>
+                </div>
+            </header>
+
+            <div class="divider fade-in"></div>
+
+            <!-- ABOUT SECTION -->
+            <div class="fade-in delay-1 grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <div class="lg:col-span-2">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                        <span class="text-neutral-600 mr-1 text-sm font-mono">[01]</span>
+                        О ИГРОКЕ
+                        <span class="jp-text text-neutral-600 text-sm font-normal ml-2">概要</span>
+                    </h2>
+                    <p class="text-neutral-400 leading-relaxed text-xl max-w-4xl border-l-2 border-neutral-800 pl-6">
+                        Универсальный игрок с фокусом на FPS шутеры высокой сложности. 
+                        Предпочитаю агрессивный стиль игры и роль энтри-фрагера. 
+                        В свободное время занимаюсь строительством сложных механизмов.
+                        Всегда нацелен на победу.
+                    </p>
+                </div>
+                
+                <div class="lg:col-span-1 grid grid-cols-2 gap-4 h-fit self-end font-mono">
+                    <div class="stat-box bg-neutral-900/30 p-4 border border-neutral-800 rounded relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-1 opacity-20 text-[10px]">MS</div>
+                        <span class="block text-xs text-neutral-500 uppercase tracking-wider mb-1">Reaction</span>
+                        <span class="block text-white font-bold text-xl">165ms</span>
+                    </div>
+                    <div class="stat-box bg-neutral-900/30 p-4 border border-neutral-800 rounded relative">
+                        <span class="block text-xs text-neutral-500 uppercase tracking-wider mb-1">DPI</span>
+                        <span class="block text-white font-bold text-xl">800/1.2</span>
+                    </div>
+                    <div class="stat-box bg-neutral-900/30 p-4 border border-neutral-800 rounded relative">
+                        <span class="block text-xs text-neutral-500 uppercase tracking-wider mb-1">Monitor</span>
+                        <span class="block text-white font-bold text-xl">144Hz</span>
+                    </div>
+                    <div class="stat-box bg-neutral-900/30 p-4 border border-neutral-800 rounded relative">
+                        <span class="block text-xs text-neutral-500 uppercase tracking-wider mb-1">Status</span>
+                        <span class="block text-white font-bold text-xl">LFT</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll indicator -->
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce">
+                <span class="text-[10px] text-neutral-500 uppercase tracking-widest font-mono">Scroll</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 text-neutral-500"></i>
+            </div>
+        </section>
+
+        <!-- GAMES SECTION -->
+        <section class="scroll-reveal mb-16">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold flex items-center gap-2">
+                    <span class="text-neutral-600 mr-1 text-sm font-mono">[02]</span>
+                    ДИСЦИПЛИНЫ
+                    <span class="jp-text text-neutral-600 text-sm font-normal ml-2">ゲーム</span>
+                </h2>
+                <span class="text-[10px] font-bold bg-white text-black px-2 py-1 rounded uppercase tracking-wider font-mono">
+                    MAIN ROSTER
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- CS2 CARD -->
+                <article class="info-card p-8 rounded-sm relative overflow-hidden group">
+                    <div class="absolute top-2 right-3 text-[10px] text-neutral-700 font-mono">OBJ_CS2</div>
+                    <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="target" class="w-32 h-32"></i>
+                    </div>
+                    
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-6">
+                            <h3 class="text-3xl font-bold">CS2</h3>
+                            <span class="text-xs font-mono text-neutral-400 border border-neutral-800 px-2 py-1">4,500 H</span>
+                        </div>
+                        
+                        <p class="text-neutral-400 mb-8 text-lg">
+                            Основная дисциплина. Позиция <span class="text-white font-medium">Main AWP</span>. 
+                            Знание раскидок: Mirage, Inferno, Ancient.
+                        </p>
+
+                        <div class="mt-auto grid grid-cols-3 gap-6 border-t border-neutral-800 pt-6">
+                            <div>
+                                <span class="text-[10px] text-neutral-500 block mb-1 uppercase font-mono">Rank</span>
+                                <span class="font-bold text-white text-lg">Global</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-neutral-500 block mb-1 uppercase font-mono">Faceit</span>
+                                <span class="font-bold text-white text-lg">Lvl 10</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-neutral-500 block mb-1 uppercase font-mono">Gun</span>
+                                <span class="font-bold text-white text-lg">AWP</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- VALORANT CARD -->
+                <article class="info-card p-8 rounded-sm relative overflow-hidden group">
+                    <div class="absolute top-2 right-3 text-[10px] text-neutral-700 font-mono">OBJ_VAL</div>
+                    <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="swords" class="w-32 h-32"></i>
+                    </div>
+                    
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-6">
+                            <h3 class="text-3xl font-bold">VALORANT</h3>
+                            <span class="text-xs font-mono text-neutral-400 border border-neutral-800 px-2 py-1">IMMO 3</span>
+                        </div>
+                        
+                        <p class="text-neutral-400 mb-8 text-lg">
+                            Дуэлянт / Агрессивный энтри. 
+                            Высокий процент HS. Мейн: Jett / Reyna.
+                        </p>
+
+                        <div class="mt-auto grid grid-cols-3 gap-6 border-t border-neutral-800 pt-6">
+                            <div>
+                                <span class="text-[10px] text-neutral-500 block mb-1 uppercase font-mono">Rank</span>
+                                <span class="font-bold text-white text-lg">Asc 3</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-neutral-500 block mb-1 uppercase font-mono">Main</span>
+                                <span class="font-bold text-white text-lg">Jett</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-neutral-500 block mb-1 uppercase font-mono">Skin</span>
+                                <span class="font-bold text-white text-lg">Reaver</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- MINECRAFT CARD -->
+                <article class="info-card p-8 rounded-sm relative overflow-hidden group lg:col-span-2">
+                    <div class="absolute top-2 right-3 text-[10px] text-neutral-700 font-mono">OBJ_MC</div>
+                    <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="box-select" class="w-32 h-32"></i>
+                    </div>
+                    
+                    <div class="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-4 mb-4">
+                                <h3 class="text-3xl font-bold">Minecraft</h3>
+                                <span class="text-xs font-mono text-neutral-400 border border-neutral-800 px-2 py-1">LEGACY</span>
+                            </div>
+                            <p class="text-neutral-400 text-lg max-w-2xl">
+                                Игра для отдыха с соревновательным уклоном. Hypixel Bedwars и SkyWars. 
+                                Fast-bridge, PvP аим. Технические сборки.
+                            </p>
+                        </div>
+
+                        <div class="w-full md:w-auto grid grid-cols-3 md:flex md:gap-12 md:border-l md:border-neutral-800 md:pl-12 pt-6 md:pt-0 border-t border-neutral-800 md:border-t-0 mt-4 md:mt-0">
+                            <div>
+                                <span class="text-[10px] text-neutral-500 block mb-1 uppercase font-mono">Server</span>
+                                <span class="font-bold text-white text-lg">Hypixel</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-neutral-500 block mb-1 uppercase font-mono">Mode</span>
+                                <span class="font-bold text-white text-lg">Bedwars</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-neutral-500 block mb-1 uppercase font-mono">CPS</span>
+                                <span class="font-bold text-white text-lg">14</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <div class="divider scroll-reveal"></div>
+
+        <!-- IMAGE / AESTHETIC SECTION -->
+        <section class="scroll-reveal relative group">
+             <div class="absolute top-6 left-6 z-20">
+                 <span class="bg-black text-white text-[10px] font-bold px-2 py-1 tracking-widest font-mono">FIGURE_01 // 風景</span>
+             </div>
+
+             <div class="w-full h-80 md:h-96 overflow-hidden rounded-sm bg-neutral-900 relative border border-neutral-800">
+                 <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
+                 <!-- Атмосферное фото Японии ночью -->
+                 <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=2000&auto=format&fit=crop" 
+                      alt="Tokyo Night Aesthetic" 
+                      class="w-full h-full object-cover manga-filter smooth-zoom">
+                 
+                 <!-- Декоративные линии HUD -->
+                 <div class="absolute inset-4 border border-white/10 z-20 pointer-events-none"></div>
+                 <div class="absolute bottom-6 right-6 z-20 flex gap-2">
+                     <div class="w-2 h-2 bg-white/50"></div>
+                     <div class="w-2 h-2 bg-white/50"></div>
+                     <div class="w-2 h-2 bg-white"></div>
+                 </div>
+             </div>
+
+             <div class="mt-4 flex justify-between items-center px-1">
+                 <p class="text-sm text-neutral-500 italic font-mono">"No fear, no hesitation. // 恐れはない"</p>
+                 <i data-lucide="zap" class="w-4 h-4 text-white"></i>
+             </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="mt-24 text-center pb-12 scroll-reveal relative z-20">
+             <div class="flex justify-center gap-12 mb-8 font-mono text-xs">
+                 <a href="https://discord.gg/GBjbSmzG" target="_blank" class="text-neutral-500 hover:text-white transition-colors uppercase font-bold tracking-wider">[ DISCORD ]</a>
+                 <a href="https://steamcommunity.com/profiles/76561199606495594/" target="_blank" class="text-neutral-500 hover:text-white transition-colors uppercase font-bold tracking-wider">[ STEAM ]</a>
+             </div>
+             <p class="text-neutral-800 text-[10px] font-mono uppercase tracking-[0.2em]">
+                 System Status: Normal // Designed for whyuhere
+             </p>
+        </footer>
+
+    </main>
+
+    <script>
+        // Скролл наверх при загрузке
+        window.onbeforeunload = function() { window.scrollTo(0, 0); };
+        history.scrollRestoration = 'manual';
+        window.scrollTo(0, 0);
+
+        // Прелоадер
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('preloader').classList.add('hidden');
+                // Запускаем анимации появления после прелоадера
+                setTimeout(function() {
+                    document.querySelectorAll('.fade-in').forEach(el => el.classList.add('animate'));
+                    document.querySelectorAll('.side-character').forEach(el => el.classList.add('show'));
+                    document.getElementById('particles-canvas').classList.add('show');
+                }, 300);
+            }, 2000);
+        });
+
+        // Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        } else {
+            window.addEventListener('load', function() {
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            });
+        }
+
+        // Частицы
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function createParticles() {
+            particles = [];
+            const count = Math.floor((canvas.width * canvas.height) / 15000);
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 1.5 + 0.5,
+                    speedY: Math.random() * 0.3 + 0.1,
+                    opacity: Math.random() * 0.5 + 0.1
+                });
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+                ctx.fill();
+                
+                p.y += p.speedY;
+                if (p.y > canvas.height + 10) {
+                    p.y = -10;
+                    p.x = Math.random() * canvas.width;
+                }
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        resizeCanvas();
+        createParticles();
+        animateParticles();
+        window.addEventListener('resize', () => { resizeCanvas(); createParticles(); });
+
+        // Scroll reveal
+        const scrollReveal = () => {
+            document.querySelectorAll('.scroll-reveal').forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 100) {
+                    el.classList.add('visible');
+                }
+            });
+        };
+        window.addEventListener('scroll', scrollReveal);
+        scrollReveal();
+
+
+    </script>
+</body>
+</html>
